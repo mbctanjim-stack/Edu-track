@@ -1,0 +1,809 @@
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#101827">
+<title>CTC EduTrack</title>
+<link rel="manifest" href="./manifest.json">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#0b1220;color:#edf3ff;min-height:100vh}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+.app{max-width:900px;margin:auto;padding:18px}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px 0 22px;gap:10px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:45px;height:45px;border-radius:14px;background:linear-gradient(135deg,#38bdf8,#6366f1);display:flex;align-items:center;justify-content:center;font-size:23px;font-weight:800}
+.brand h1{font-size:19px}
+.brand small{color:#94a3b8}
+.tag{background:#18263b;padding:8px 12px;border-radius:20px;font-size:12px;color:#7dd3fc}
+.hero{background:linear-gradient(135deg,#162b48,#183d60);padding:24px;border-radius:23px;margin-bottom:18px;border:1px solid #25496c}
+.hero h2{font-size:24px;margin-bottom:8px}
+.hero p{color:#c1d4ea;font-size:14px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:18px 0}
+.stat{background:#141e2e;border:1px solid #26364b;padding:18px;border-radius:17px}
+.stat .number{font-size:26px;font-weight:800;margin:8px 0}
+.stat small{color:#9aabc1}
+.stat .emoji{font-size:22px}
+.section{background:#121c2b;border:1px solid #243247;border-radius:18px;padding:18px;margin:16px 0}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px}
+.section-head h3{font-size:17px}
+.btn{border:0;border-radius:11px;padding:10px 14px;background:#2563eb;color:white;font-weight:700}
+.btn.secondary{background:#23334a;color:#dbeafe}
+.btn.danger{background:#7f1d1d}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+input,textarea{background:#0b1422;color:white;border:1px solid #334155;border-radius:11px;padding:12px;width:100%;outline:none}
+input:focus,textarea:focus{border-color:#38bdf8}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.subject{background:#0e1827;border:1px solid #25354a;padding:15px;border-radius:15px;margin:12px 0}
+.subject-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.subject h4{font-size:15px}
+.progress{height:8px;background:#26354a;border-radius:20px;overflow:hidden;margin:12px 0}
+.progress div{height:100%;background:linear-gradient(90deg,#38bdf8,#818cf8);border-radius:20px}
+.subject-info{color:#9eafc5;font-size:12px}
+.chapter-control{display:flex;gap:8px;margin-top:12px}
+.chapter-control input{width:70px}
+.task,.exam,.log{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px;background:#0d1725;border-radius:12px;margin:9px 0;border:1px solid #233247}
+.task-left{display:flex;align-items:center;gap:10px}
+.task.done{opacity:.55}
+.task.done .task-title{text-decoration:line-through}
+.task input[type=checkbox]{width:18px;height:18px;accent-color:#38bdf8}
+.small{font-size:12px;color:#91a3bb;margin-top:4px}
+.delete{border:0;background:#3a2028;color:#fca5a5;padding:7px 10px;border-radius:8px}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:18px 0}
+.tab{background:#152237;color:#b9c9df;border:1px solid #26374e;border-radius:12px;padding:12px 5px;font-size:12px}
+.tab.active{background:#1d4ed8;color:white;border-color:#3b82f6}
+.page{display:none}
+.page.active{display:block}
+.empty{text-align:center;color:#7f91aa;padding:25px 5px}
+footer{text-align:center;color:#64748b;font-size:12px;padding:25px}
+.toast{position:fixed;bottom:25px;left:50%;transform:translateX(-50%);background:#2563eb;color:white;padding:12px 18px;border-radius:12px;display:none;z-index:99;max-width:90%;text-align:center}
+.authbox{max-width:480px;margin:10px auto 25px}
+.authbox h2{margin-bottom:10px}
+.authbox p{color:#a8bbd2;font-size:13px;margin:8px 0 15px}
+.authbox input{margin:7px 0}
+.auth-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
+#dashboard{display:none}
+.accountbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:#102238;border:1px solid #2c4763;padding:12px;border-radius:12px;margin-bottom:14px}
+#accountEmail{font-size:12px;color:#b7c9df;overflow-wrap:anywhere}
+@media(max-width:520px){
+ .app{padding:13px}
+ .hero h2{font-size:21px}
+ .stats{gap:9px}
+ .stat{padding:14px}
+ .form-grid{grid-template-columns:1fr}
+ .tabs{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<header>
+ <div class="brand">
+  <div class="logo">E</div>
+  <div><h1>EduTrack</h1><small>by CTC</small></div>
+ </div>
+ <span class="tag">STUDENT DASHBOARD</span>
+</header>
+
+<!-- AUTH -->
+<div id="authPanel" class="section authbox">
+ <h2>🔐 CTC EduTrack Login</h2>
+ <p>তোমার ডেটা সংরক্ষণ করতে ইমেইল ও পাসওয়ার্ড দিয়ে লগইন করো অথবা নতুন অ্যাকাউন্ট তৈরি করো।</p>
+
+ <input id="authEmail" type="email" placeholder="তোমার ইমেইল" autocomplete="email">
+ <input id="authPassword" type="password" placeholder="পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)" autocomplete="current-password">
+
+ <div class="auth-actions">
+  <button class="btn" id="loginBtn" onclick="loginUser()">Login</button>
+  <button class="btn secondary" id="registerBtn" onclick="registerUser()">নতুন অ্যাকাউন্ট</button>
+ </div>
+
+ <button class="btn secondary" style="width:100%;margin-top:9px" onclick="resetPassword()">পাসওয়ার্ড ভুলে গেছ?</button>
+ <div id="authMessage" class="small" style="margin-top:12px"></div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+
+<div class="accountbar">
+ <div>
+  <div class="small">লগইন করা অ্যাকাউন্ট</div>
+  <div id="accountEmail"></div>
+ </div>
+ <button class="btn secondary" onclick="logoutUser()">Logout</button>
+</div>
+
+<div class="hero">
+ <h2>তোমার শিক্ষার যাত্রা 🚀</h2>
+ <p>আজকের কাজ সম্পন্ন করো, নিজের অগ্রগতি দেখো এবং লক্ষ্যের দিকে এগিয়ে যাও।</p>
+</div>
+
+<div class="stats">
+ <div class="stat"><div class="emoji">📚</div><small>মোট বিষয়</small><div class="number" id="totalSubjects">0</div></div>
+ <div class="stat"><div class="emoji">✅</div><small>সম্পন্ন অধ্যায়</small><div class="number" id="completedChapters">0</div></div>
+ <div class="stat"><div class="emoji">📈</div><small>সিলেবাস অগ্রগতি</small><div class="number" id="overallProgress">0%</div></div>
+ <div class="stat"><div class="emoji">📝</div><small>অসম্পন্ন কাজ</small><div class="number" id="pendingTasks">0</div></div>
+</div>
+
+<div class="tabs">
+ <button class="tab active" onclick="showPage('subjects',this)">📚 বিষয়</button>
+ <button class="tab" onclick="showPage('tasks',this)">📝 কাজ</button>
+ <button class="tab" onclick="showPage('exams',this)">📅 পরীক্ষা</button>
+ <button class="tab" onclick="showPage('records',this)">⏱️ স্টাডি রেকর্ড</button>
+</div>
+
+<!-- SUBJECTS -->
+<div class="page active" id="subjects">
+ <div class="section">
+  <div class="section-head"><h3>📚 আমার বিষয়সমূহ</h3></div>
+  <div class="form-grid">
+   <input id="subjectName" placeholder="বিষয়ের নাম">
+   <input id="chapterTotal" type="number" min="1" placeholder="মোট অধ্যায় সংখ্যা">
+  </div>
+  <button class="btn" onclick="addSubject()">+ বিষয় যোগ করো</button>
+ </div>
+ <div class="section">
+  <h3>📖 সিলেবাস ট্র্যাকার</h3>
+  <div id="subjectList"></div>
+ </div>
+</div>
+
+<!-- TASKS -->
+<div class="page" id="tasks">
+ <div class="section">
+  <h3>📝 নতুন পড়ার কাজ</h3>
+  <div style="margin:12px 0"><input id="taskName" placeholder="কাজের নাম (যেমন: গণিত অনুশীলন)"></div>
+  <div class="form-grid">
+   <input id="taskDate" type="date">
+   <input id="taskSubject" placeholder="বিষয়">
+  </div>
+  <button class="btn" onclick="addTask()">কাজ যোগ করো</button>
+ </div>
+ <div class="section">
+  <h3>📌 আমার কাজের তালিকা</h3>
+  <div id="taskList"></div>
+ </div>
+</div>
+
+<!-- EXAMS -->
+<div class="page" id="exams">
+ <div class="section">
+  <h3>📅 পরীক্ষার তারিখ যোগ করো</h3>
+  <div style="margin:12px 0"><input id="examName" placeholder="পরীক্ষার নাম"></div>
+  <div class="form-grid">
+   <input id="examDate" type="date">
+   <input id="examSubject" placeholder="পরীক্ষার বিষয়">
+  </div>
+  <button class="btn" onclick="addExam()">পরীক্ষা যোগ করো</button>
+ </div>
+ <div class="section">
+  <h3>⏳ পরীক্ষার কাউন্টডাউন</h3>
+  <div id="examList"></div>
+ </div>
+</div>
+
+<!-- STUDY RECORDS -->
+<div class="page" id="records">
+ <div class="section">
+  <h3>⏱️ আজকের পড়াশোনার রেকর্ড</h3>
+  <div style="margin:12px 0"><input id="studySubject" placeholder="কোন বিষয় পড়েছ?"></div>
+  <div class="form-grid">
+   <input id="studyMinutes" type="number" min="1" placeholder="কত মিনিট পড়েছ?">
+   <input id="studyNote" placeholder="পড়ার বিবরণ (ঐচ্ছিক)">
+  </div>
+  <button class="btn" onclick="addStudy()">রেকর্ড সংরক্ষণ</button>
+ </div>
+ <div class="section">
+  <h3>📊 আমার পড়ার ইতিহাস</h3>
+  <div id="studyList"></div>
+ </div>
+</div>
+
+</div><!-- dashboard -->
+
+<footer>
+ CTC EduTrack · A Student Productivity App<br>
+ Chowdhury Technology Company<br>
+ © POWERED BY CTC.
+</footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+
+import {
+ getAuth,
+ createUserWithEmailAndPassword,
+ signInWithEmailAndPassword,
+ signOut,
+ onAuthStateChanged,
+ sendPasswordResetEmail
+} from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+
+import {
+ getFirestore,
+ doc,
+ getDoc,
+ setDoc,
+ serverTimestamp
+} from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+/* Firebase Config */
+const firebaseConfig = {
+  apiKey: "AIzaSyCrPEbqCHo0QS4PM_ddxLV2remTBBS9v8Q",
+  authDomain: "edutak-ffbb6.firebaseapp.com",
+  projectId: "edutak-ffbb6",
+  storageBucket: "edutak-ffbb6.firebasestorage.app",
+  messagingSenderId: "474306471553",
+  appId: "1:474306471553:web:e54f30c89e88e9c9d24f80"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+let subjects=[];
+let tasks=[];
+let exams=[];
+let studies=[];
+let currentUser=null;
+
+const localKeys=["eduSubjects","eduTasks","eduExams","eduStudies"];
+
+/* LOCAL DATA */
+function localData(){
+ try{
+  return {
+   subjects:JSON.parse(localStorage.getItem("eduSubjects")||"[]"),
+   tasks:JSON.parse(localStorage.getItem("eduTasks")||"[]"),
+   exams:JSON.parse(localStorage.getItem("eduExams")||"[]"),
+   studies:JSON.parse(localStorage.getItem("eduStudies")||"[]")
+  };
+ }catch(error){
+  console.error("Local data read error",error);
+  return {subjects:[],tasks:[],exams:[],studies:[]};
+ }
+}
+
+function hasLocalData(){
+ const d=localData();
+ return d.subjects.length>0||d.tasks.length>0||d.exams.length>0||d.studies.length>0;
+}
+
+function clearLegacyLocal(){
+ localKeys.forEach(k=>localStorage.removeItem(k));
+}
+
+function dataRef(uid){
+ return doc(db,"users",uid,"appData","main");
+}
+
+function statsRef(uid){
+ return doc(db,"userStats",uid);
+}
+
+function setAuthMessage(message){
+ document.getElementById("authMessage").textContent=message;
+}
+
+function setAuthButtons(disabled){
+ document.getElementById("loginBtn").disabled=disabled;
+ document.getElementById("registerBtn").disabled=disabled;
+}
+
+function showDashboard(user){
+ document.getElementById("authPanel").style.display="none";
+ document.getElementById("dashboard").style.display="block";
+ document.getElementById("accountEmail").textContent=user.email||"";
+}
+
+function showLogin(){
+ document.getElementById("dashboard").style.display="none";
+ document.getElementById("authPanel").style.display="block";
+}
+
+function emptyData(){
+ subjects=[];
+ tasks=[];
+ exams=[];
+ studies=[];
+}
+
+/* SAVE CLOUD DATA */
+async function saveCloudData(showMessage=false){
+ if(!currentUser)return false;
+
+ try{
+  await setDoc(dataRef(currentUser.uid),{
+   subjects,
+   tasks,
+   exams,
+   studies,
+   updatedAt:serverTimestamp()
+  });
+  return true;
+ }catch(error){
+  console.error("Cloud save failed:",error);
+  if(showMessage)showToast("Cloud-এ সংরক্ষণ হয়নি। Internet বা Rules পরীক্ষা করো।");
+  return false;
+ }
+}
+
+/* LOAD DATA + LOCAL MIGRATION */
+async function loadUserData(user){
+ const ref=dataRef(user.uid);
+ const snap=await getDoc(ref);
+
+ if(snap.exists()){
+  const data=snap.data();
+  subjects=Array.isArray(data.subjects)?data.subjects:[];
+  tasks=Array.isArray(data.tasks)?data.tasks:[];
+  exams=Array.isArray(data.exams)?data.exams:[];
+  studies=Array.isArray(data.studies)?data.studies:[];
+ }else{
+  const old=localData();
+  subjects=old.subjects;
+  tasks=old.tasks;
+  exams=old.exams;
+  studies=old.studies;
+
+  const saved=await saveCloudData();
+
+  if(saved && hasLocalData()){
+   clearLegacyLocal();
+  }
+ }
+
+ render();
+}
+
+/* LOGIN */
+window.loginUser=async function(){
+ const email=document.getElementById("authEmail").value.trim();
+ const password=document.getElementById("authPassword").value;
+
+ if(!email||!password){
+  setAuthMessage("ইমেইল ও পাসওয়ার্ড লিখো।");
+  return;
+ }
+
+ setAuthButtons(true);
+ setAuthMessage("Login হচ্ছে...");
+
+ try{
+  await signInWithEmailAndPassword(auth,email,password);
+  setAuthMessage("Login সফল হয়েছে!");
+ }catch(error){
+  console.error("Login error:",error);
+
+  if(error.code==="auth/invalid-credential"||error.code==="auth/wrong-password"){
+   setAuthMessage("ইমেইল অথবা পাসওয়ার্ড ভুল।");
+  }else if(error.code==="auth/user-not-found"){
+   setAuthMessage("এই অ্যাকাউন্ট পাওয়া যায়নি।");
+  }else if(error.code==="auth/too-many-requests"){
+   setAuthMessage("অনেকবার চেষ্টা হয়েছে। কিছুক্ষণ পরে আবার চেষ্টা করো।");
+  }else if(error.code==="auth/invalid-email"){
+   setAuthMessage("সঠিক ইমেইল লিখো।");
+  }else if(error.code==="auth/network-request-failed"){
+   setAuthMessage("Internet সংযোগ পরীক্ষা করো।");
+  }else{
+   setAuthMessage("Login সমস্যা: "+(error.code||error.message));
+  }
+ }finally{
+  setAuthButtons(false);
+ }
+};
+
+/* REGISTER */
+window.registerUser=async function(){
+ const email=document.getElementById("authEmail").value.trim();
+ const password=document.getElementById("authPassword").value;
+
+ if(!email||!password){
+  setAuthMessage("ইমেইল ও পাসওয়ার্ড লিখো।");
+  return;
+ }
+
+ if(password.length<6){
+  setAuthMessage("পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।");
+  return;
+ }
+
+ setAuthButtons(true);
+ setAuthMessage("অ্যাকাউন্ট তৈরি হচ্ছে...");
+
+ try{
+  await createUserWithEmailAndPassword(auth,email,password);
+  setAuthMessage("অ্যাকাউন্ট তৈরি হয়েছে! 🎉");
+ }catch(error){
+  console.error("Registration error:",error);
+
+  if(error.code==="auth/email-already-in-use"){
+   setAuthMessage("এই ইমেইল দিয়ে আগে অ্যাকাউন্ট তৈরি হয়েছে। Login করো।");
+  }else if(error.code==="auth/invalid-email"){
+   setAuthMessage("সঠিক ইমেইল লিখো।");
+  }else if(error.code==="auth/weak-password"){
+   setAuthMessage("আরও শক্তিশালী পাসওয়ার্ড ব্যবহার করো।");
+  }else if(error.code==="auth/network-request-failed"){
+   setAuthMessage("Internet সংযোগ পরীক্ষা করো।");
+  }else{
+   setAuthMessage("Registration সমস্যা: "+(error.code||error.message));
+  }
+ }finally{
+  setAuthButtons(false);
+ }
+};
+
+/* PASSWORD RESET */
+window.resetPassword=async function(){
+ const email=document.getElementById("authEmail").value.trim();
+
+ if(!email){
+  setAuthMessage("আগে ইমেইল লিখো।");
+  return;
+ }
+
+ try{
+  await sendPasswordResetEmail(auth,email);
+  setAuthMessage("পাসওয়ার্ড পরিবর্তনের ইমেইল পাঠানো হয়েছে। Inbox পরীক্ষা করো।");
+ }catch(error){
+  console.error("Reset error:",error);
+  setAuthMessage("Reset সমস্যা: "+(error.code||error.message));
+ }
+};
+
+/* LOGOUT */
+window.logoutUser=async function(){
+ try{
+  await signOut(auth);
+  emptyData();
+  render();
+  showLogin();
+  setAuthMessage("Logout হয়েছে।");
+ }catch(error){
+  console.error("Logout error:",error);
+  showToast("Logout করতে সমস্যা হয়েছে।");
+ }
+};
+
+/* AUTH STATE + USER STATISTICS */
+onAuthStateChanged(auth,async user=>{
+ if(user){
+  currentUser=user;
+  showDashboard(user);
+
+  // userStats ডকুমেন্ট আগে আছে কি না যাচাই
+  // থাকলে তার createdAt পরিবর্তন হবে না
+  // না থাকলে বর্তমান user-এর ডকুমেন্ট তৈরি হবে
+  try{
+   const statRef=statsRef(user.uid);
+   const statSnap=await getDoc(statRef);
+
+   if(!statSnap.exists()){
+    await setDoc(statRef,{
+     createdAt:serverTimestamp()
+    });
+    console.log("User statistics document created.");
+   }
+  }catch(statsError){
+   console.error("Stats write error:",statsError);
+  }
+
+  try{
+   await loadUserData(user);
+  }catch(error){
+   console.error("Load data error:",error);
+   showToast("ডেটা লোড হয়নি। Internet বা Firestore Rules পরীক্ষা করো।");
+  }
+ }else{
+  currentUser=null;
+  emptyData();
+  render();
+  showLogin();
+ }
+});
+
+/* TOAST */
+function showToast(message){
+ const t=document.getElementById("toast");
+ t.textContent=message;
+ t.style.display="block";
+ setTimeout(()=>t.style.display="none",2400);
+}
+
+/* PAGE NAVIGATION */
+window.showPage=function(id,button){
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ button.classList.add("active");
+};
+
+/* SUBJECTS */
+window.addSubject=function(){
+ const name=document.getElementById("subjectName").value.trim();
+ const total=parseInt(document.getElementById("chapterTotal").value,10);
+
+ if(!name||!total||total<1){
+  showToast("বিষয়ের নাম ও অধ্যায় সংখ্যা লিখো");
+  return;
+ }
+
+ subjects.push({id:Date.now(),name,total,completed:0});
+ document.getElementById("subjectName").value="";
+ document.getElementById("chapterTotal").value="";
+ render();
+ saveCloudData(true);
+ showToast("বিষয় যোগ হয়েছে");
+};
+
+window.changeCompleted=function(id,amount){
+ const s=subjects.find(x=>x.id===id);
+ if(!s)return;
+ s.completed=Math.max(0,Math.min(s.total,s.completed+amount));
+ render();
+ saveCloudData(true);
+};
+
+window.deleteSubject=function(id){
+ if(confirm("এই বিষয়টি মুছে ফেলবে?")){
+  subjects=subjects.filter(x=>x.id!==id);
+  render();
+  saveCloudData(true);
+ }
+};
+
+/* TASKS */
+window.addTask=function(){
+ const name=document.getElementById("taskName").value.trim();
+ const date=document.getElementById("taskDate").value;
+ const subject=document.getElementById("taskSubject").value.trim();
+
+ if(!name){
+  showToast("কাজের নাম লিখো");
+  return;
+ }
+
+ tasks.push({id:Date.now(),name,date,subject,done:false});
+ document.getElementById("taskName").value="";
+ document.getElementById("taskDate").value="";
+ document.getElementById("taskSubject").value="";
+ render();
+ saveCloudData(true);
+ showToast("কাজ যোগ হয়েছে");
+};
+
+window.toggleTask=function(id){
+ const t=tasks.find(x=>x.id===id);
+ if(t)t.done=!t.done;
+ render();
+ saveCloudData(true);
+};
+
+window.deleteTask=function(id){
+ tasks=tasks.filter(x=>x.id!==id);
+ render();
+ saveCloudData(true);
+};
+
+/* EXAMS */
+window.addExam=function(){
+ const name=document.getElementById("examName").value.trim();
+ const date=document.getElementById("examDate").value;
+ const subject=document.getElementById("examSubject").value.trim();
+
+ if(!name||!date){
+  showToast("পরীক্ষার নাম ও তারিখ লিখো");
+  return;
+ }
+
+ exams.push({id:Date.now(),name,date,subject});
+ document.getElementById("examName").value="";
+ document.getElementById("examDate").value="";
+ document.getElementById("examSubject").value="";
+ render();
+ saveCloudData(true);
+ showToast("পরীক্ষা যোগ হয়েছে");
+};
+
+window.deleteExam=function(id){
+ exams=exams.filter(x=>x.id!==id);
+ render();
+ saveCloudData(true);
+};
+
+function daysUntil(date){
+ const today=new Date();
+ today.setHours(0,0,0,0);
+ const target=new Date(date+"T00:00:00");
+ return Math.ceil((target-today)/86400000);
+}
+
+/* STUDY RECORDS */
+window.addStudy=function(){
+ const subject=document.getElementById("studySubject").value.trim();
+ const minutes=parseInt(document.getElementById("studyMinutes").value,10);
+ const note=document.getElementById("studyNote").value.trim();
+
+ if(!subject||!minutes||minutes<1){
+  showToast("বিষয় ও পড়ার সময় লিখো");
+  return;
+ }
+
+ studies.unshift({
+  id:Date.now(),
+  subject,
+  minutes,
+  note,
+  date:new Date().toLocaleDateString("bn-BD")
+ });
+
+ document.getElementById("studySubject").value="";
+ document.getElementById("studyMinutes").value="";
+ document.getElementById("studyNote").value="";
+ render();
+ saveCloudData(true);
+ showToast("স্টাডি রেকর্ড সংরক্ষিত");
+};
+
+window.deleteStudy=function(id){
+ studies=studies.filter(x=>x.id!==id);
+ render();
+ saveCloudData(true);
+};
+
+/* HTML ESCAPE */
+function escapeHTML(str){
+ return String(str).replace(/[&<>"']/g,function(c){
+  return {
+   "&":"&amp;",
+   "<":"&lt;",
+   ">":"&gt;",
+   '"':"&quot;",
+   "'":"&#39;"
+  }[c];
+ });
+}
+
+/* RENDER SUBJECTS */
+function renderSubjects(){
+ const box=document.getElementById("subjectList");
+
+ if(!subjects.length){
+  box.innerHTML='<div class="empty">এখনো কোনো বিষয় যোগ করা হয়নি।<br>উপরে থেকে বিষয় যোগ করো।</div>';
+  return;
+ }
+
+ box.innerHTML=subjects.map(s=>{
+  const percent=s.total?Math.round(s.completed/s.total*100):0;
+  return `
+  <div class="subject">
+   <div class="subject-top">
+    <h4>${escapeHTML(s.name)}</h4>
+    <button class="delete" onclick="deleteSubject(${s.id})">মুছুন</button>
+   </div>
+   <div class="progress"><div style="width:${percent}%"></div></div>
+   <div class="subject-info">${s.completed} / ${s.total} অধ্যায় সম্পন্ন · ${percent}%</div>
+   <div class="chapter-control">
+    <button class="btn secondary" onclick="changeCompleted(${s.id},-1)">−</button>
+    <button class="btn" onclick="changeCompleted(${s.id},1)">+ অধ্যায় সম্পন্ন</button>
+   </div>
+  </div>`;
+ }).join("");
+}
+
+/* RENDER TASKS */
+function renderTasks(){
+ const box=document.getElementById("taskList");
+
+ if(!tasks.length){
+  box.innerHTML='<div class="empty">এখনো কোনো কাজ নেই।</div>';
+  return;
+ }
+
+ box.innerHTML=tasks.map(t=>`
+  <div class="task ${t.done?"done":""}">
+   <div class="task-left">
+    <input type="checkbox" ${t.done?"checked":""} onchange="toggleTask(${t.id})">
+    <div>
+     <div class="task-title">${escapeHTML(t.name)}</div>
+     <div class="small">${escapeHTML(t.subject||"সাধারণ কাজ")}${t.date?" · "+escapeHTML(t.date):""}</div>
+    </div>
+   </div>
+   <button class="delete" onclick="deleteTask(${t.id})">✕</button>
+  </div>
+ `).join("");
+}
+
+/* RENDER EXAMS */
+function renderExams(){
+ const box=document.getElementById("examList");
+
+ if(!exams.length){
+  box.innerHTML='<div class="empty">কোনো পরীক্ষা যোগ করা হয়নি।</div>';
+  return;
+ }
+
+ const sorted=[...exams].sort((a,b)=>a.date.localeCompare(b.date));
+
+ box.innerHTML=sorted.map(e=>{
+  const days=daysUntil(e.date);
+  let countdown;
+
+  if(days>0)countdown=`আর ${days} দিন বাকি`;
+  else if(days===0)countdown="আজ পরীক্ষা";
+  else countdown=`${Math.abs(days)} দিন আগে শেষ হয়েছে`;
+
+  return `
+   <div class="exam">
+    <div>
+     <strong>${escapeHTML(e.name)}</strong>
+     <div class="small">${escapeHTML(e.subject||"সকল বিষয়")} · ${escapeHTML(e.date)}</div>
+     <div style="color:#7dd3fc;margin-top:6px">${countdown}</div>
+    </div>
+    <button class="delete" onclick="deleteExam(${e.id})">মুছুন</button>
+   </div>`;
+ }).join("");
+}
+
+/* RENDER STUDIES */
+function renderStudies(){
+ const box=document.getElementById("studyList");
+
+ if(!studies.length){
+  box.innerHTML='<div class="empty">এখনো কোনো পড়ার রেকর্ড নেই।</div>';
+  return;
+ }
+
+ box.innerHTML=studies.map(s=>`
+  <div class="log">
+   <div>
+    <strong>${escapeHTML(s.subject)}</strong>
+    <div class="small">${escapeHTML(s.date)} · ${s.minutes} মিনিট</div>
+    ${s.note?`<div class="small">${escapeHTML(s.note)}</div>`:""}
+   </div>
+   <button class="delete" onclick="deleteStudy(${s.id})">✕</button>
+  </div>
+ `).join("");
+}
+
+/* RENDER STATS */
+function renderStats(){
+ const total=subjects.reduce((a,s)=>a+(Number(s.total)||0),0);
+ const completed=subjects.reduce((a,s)=>a+(Number(s.completed)||0),0);
+ const percent=total?Math.round(completed/total*100):0;
+
+ document.getElementById("totalSubjects").textContent=subjects.length;
+ document.getElementById("completedChapters").textContent=completed;
+ document.getElementById("overallProgress").textContent=percent+"%";
+ document.getElementById("pendingTasks").textContent=tasks.filter(t=>!t.done).length;
+}
+
+/* RENDER ALL */
+function render(){
+ renderSubjects();
+ renderTasks();
+ renderExams();
+ renderStudies();
+ renderStats();
+}
+
+/* SERVICE WORKER */
+if("serviceWorker" in navigator){
+ window.addEventListener("load",()=>{
+  navigator.serviceWorker.register("./sw.js")
+   .then(()=>console.log("CTC EduTrack Offline Support Ready"))
+   .catch(error=>console.log("Offline setup failed:",error));
+ });
+}
+</script>
+</body>
+</html>
